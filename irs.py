@@ -65,20 +65,20 @@ def main(debug=False):
         print(img[0, 0], type(img[0, 0]), type(img), img.shape)
     else:
         img = get_img_from_file()
-        img = green_blue_swap(img)
+        # img = green_blue_swap(img)
         # img = cv.cvtColor(img, cv.COLOR_BGR2BGRA)
         print(img.shape)
 
     hsv_min = np.array((100, 40, 56), np.uint8)
     hsv_max = np.array((153, 255, 255), np.uint8)
     color_red = (0, 0, 255)
-
+    img = np.float32(img)       # https://stackoverflow.com/questions/55179724/opencv-error-unsupported-depth-of-input-image
     hsv_img = cv.cvtColor(img, cv.COLOR_BGR2HSV)
     thresh = cv.inRange(hsv_img, hsv_min, hsv_max)
 
     # grey = cv.cvtColor(img, cv.COLOR_RGB2GRAY)
     # ret, thresh = cv.threshold(grey, 125, 255, cv.THRESH_BINARY)
-    img2, contours, hierarchy = cv.findContours(thresh, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+    contours, hierarchy = cv.findContours(thresh, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
 
     if debug:
         cv.drawContours(hsv_img, contours, -1, (255, 255, 255), 2)
