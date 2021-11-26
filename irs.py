@@ -3,6 +3,21 @@ from cv2 import cv2 as cv
 import sys
 
 
+# https://stackoverflow.com/questions/59804225/unsupported-depth-of-input-image-vdepthcontainsdepth-where-depth-is-4
+def green_blue_swap(image):
+    # 3-channel image (no transparency)
+    if image.shape[2] == 3:
+        b, g, r = cv.split(image)
+        image[:, :, 0] = g
+        image[:, :, 1] = b
+    # 4-channel image (with transparency)
+    elif image.shape[2] == 4:
+        b, g, r, a = cv.split(image)
+        image[:, :, 0] = g
+        image[:, :, 1] = b
+    return image
+
+
 def get_img():
     hex_2_bgr = lambda h: [int(h[i:i + 2], 16) for i in (0, 2, 4)]
 
@@ -34,6 +49,7 @@ def get_img_from_file():
     matrix = np.reshape(data, (1280, 1024, 3))
     # print(matrix)
     # img = cv.imencode(data, cv.IMREAD_COLOR)
+    print(type(matrix), len(matrix), len(matrix[0]), len(matrix[0][0]))
     return matrix
 
 
@@ -46,9 +62,12 @@ def main(debug=False):
     if debug:
         img = cv.imread('image.jpg')
         img = cv.cvtColor(img, cv.COLOR_RGB2BGR)
-        print(img[0, 0], type(img[0, 0]))
+        print(img[0, 0], type(img[0, 0]), type(img), img.shape)
     else:
         img = get_img_from_file()
+        img = green_blue_swap(img)
+        # img = cv.cvtColor(img, cv.COLOR_BGR2BGRA)
+        print(img.shape)
 
     hsv_min = np.array((100, 40, 56), np.uint8)
     hsv_max = np.array((153, 255, 255), np.uint8)
